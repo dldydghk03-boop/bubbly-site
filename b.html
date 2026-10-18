@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>방울 플래너 · 받은 방울</title>
+<meta name="description" content="친구가 보낸 방울을 보고, 방울 플래너로 받아요">
+<meta property="og:title" content="🫧 방울이 도착했어요">
+<meta property="og:description" content="방울 플래너에서 받아 내 일정에 넣어요">
+<meta name="theme-color" content="#071722">
+<!-- 받기 페이지(2026-10-18 WORLD H — 바이럴 고리): 보내기 글의 링크 #BGL1.… 을 열면 방울을 보여 주고, 앱이 있으면 bubbly:// 로 바로 받고, 없으면 설치로.
+     서버 없음 — 코드는 주소의 # 뒤라 서버로 가지 않는다(GitHub Pages 정적 파일). 스토어 주소가 생기면 아래 STORE 두 줄만 채운다. -->
+<style>
+  :root{--text:rgba(248,247,242,.94); --dim:rgba(225,236,244,.62); --accent:#53D7C2; --ink:#03241E; --fill:rgba(255,255,255,.08);}
+  *{box-sizing:border-box}
+  html,body{margin:0; min-height:100%; background:linear-gradient(180deg,#0B2A3C 0%,#071722 55%,#040E18 100%); color:var(--text);
+    font-family:ui-rounded,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard Variable",system-ui,"Noto Sans KR",sans-serif;}
+  main{max-width:420px; margin:0 auto; padding:max(28px,env(safe-area-inset-top)) 20px 40px; text-align:center;}
+  .bub{width:150px; height:150px; margin:26px auto 18px; border-radius:50%; position:relative;
+    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.28), rgba(120,170,200,.14) 60%, rgba(60,120,160,.08));
+    box-shadow:inset 0 0 0 2px rgba(200,230,245,.5), 0 0 40px rgba(120,200,230,.25); animation:bob 4s ease-in-out infinite;}
+  .bub::before{content:''; position:absolute; left:28px; top:22px; width:30px; height:16px; border-radius:50%; background:rgba(255,255,255,.85); transform:rotate(-30deg);}
+  .bub svg{position:absolute; left:0; top:0; width:100%; height:100%;}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @media (prefers-reduced-motion:reduce){.bub{animation:none}}
+  h1{font-size:22px; margin:0 0 6px; letter-spacing:-.01em;}
+  .from{color:var(--dim); font-size:15px; margin:0 0 22px;}
+  .card{background:var(--fill); border-radius:22px; padding:18px 18px 16px; text-align:left; box-shadow:inset 0 1px 0 rgba(255,255,255,.12);}
+  .what{font-size:19px; font-weight:800; margin:0 0 6px; word-break:keep-all;}
+  .when{color:var(--dim); font-size:14px; margin:0 0 8px;}
+  .mood{font-size:14px; margin:0;}
+  .note{color:var(--dim); font-size:14px; margin:6px 0 0; white-space:pre-line;}
+  button,a.btn{display:block; width:100%; border:0; border-radius:18px; padding:16px; margin-top:12px; font:inherit; font-size:16px; font-weight:800; cursor:pointer; text-decoration:none; text-align:center;}
+  .go{background:var(--accent); color:var(--ink); box-shadow:0 10px 26px -10px rgba(83,215,194,.7);}
+  .sub{background:var(--fill); color:var(--text);}
+  .hint{color:var(--dim); font-size:13px; line-height:1.5; margin:18px 0 0;}
+  .bad{color:#FF9E8C;}
+  footer{margin-top:36px; color:var(--dim); font-size:12px;} footer a{color:var(--dim);}
+  [hidden]{display:none !important;}
+</style>
+</head>
+<body>
+<main>
+  <div class="bub" id="bub"></div>
+  <h1 id="title">방울이 도착했어요</h1>
+  <p class="from" id="from"></p>
+  <div class="card" id="card" hidden>
+    <p class="what" id="what"></p>
+    <p class="when" id="when"></p>
+    <p class="mood" id="mood"></p>
+    <p class="note" id="note" hidden></p>
+  </div>
+  <p class="hint bad" id="bad" hidden>방울 글을 찾지 못했어요. 받은 글을 처음부터 끝까지 복사해서 앱의 ‘받기’에 붙여 넣어 주세요.</p>
+  <button type="button" class="go" id="open">방울 플래너로 받기</button>
+  <button type="button" class="sub" id="copy">글 복사하기</button>
+  <a class="btn sub" id="ios" hidden>App Store에서 받기</a>
+  <a class="btn sub" id="android" hidden>Google Play에서 받기</a>
+  <p class="hint" id="hint">앱이 있으면 바로 열려요. 없으면 글을 복사해 두고 설치한 뒤 ‘받기’에 붙여 넣어요.</p>
+  <footer><a href="privacy.html">개인정보처리방침</a></footer>
+</main>
+<script>
+(function(){
+  'use strict';
+  var STORE_IOS='', STORE_ANDROID='';   // 스토어 주소가 생기면 여기만(docs/STORE.md)
+  var EN=!/^ko/i.test(navigator.language||'');
+  var T=EN? {title:'A bubble arrived', from:'from {from}', open:'Open in Bubbly', copy:'Copy the text', copied:'Copied · paste it into Receive in Bubbly', bad:'Couldn’t find a bubble here. Copy the whole message and paste it into Receive in the app.',
+      hint:'Opens right away if you have the app. Otherwise copy the text, install, then paste it into Receive.', later:'Later', ios:'Get it on the App Store', android:'Get it on Google Play', mood:['📌 Must','💪 Go!','🎂 Congrats','🍰 Together','😴 Rest','🫧 Just'], parts:['morning','midmorning','afternoon','evening','night']}
+    : {title:'방울이 도착했어요', from:'{from} 님이 보냈어요', open:'방울 플래너로 받기', copy:'글 복사하기', copied:'복사했어요 · 앱의 ‘받기’에 붙여 넣어요', bad:'방울 글을 찾지 못했어요. 받은 글을 처음부터 끝까지 복사해서 앱의 ‘받기’에 붙여 넣어 주세요.',
+      hint:'앱이 있으면 바로 열려요. 없으면 글을 복사해 두고 설치한 뒤 ‘받기’에 붙여 넣어요.', later:'나중에', ios:'App Store에서 받기', android:'Google Play에서 받기', mood:['📌 꼭','💪 응원','🎂 축하','🍰 같이','😴 쉬어','🫧 그냥'], parts:['아침','오전','오후','저녁','밤']};
+  var $=function(id){ return document.getElementById(id); };
+  $('title').textContent=T.title; $('open').textContent=T.open; $('copy').textContent=T.copy; $('hint').textContent=T.hint; $('bad').textContent=T.bad; $('ios').textContent=T.ios; $('android').textContent=T.android;
+  if(STORE_IOS){ $('ios').href=STORE_IOS; $('ios').hidden=false; } if(STORE_ANDROID){ $('android').href=STORE_ANDROID; $('android').hidden=false; }
+  var m=/BGL1\.([A-Za-z0-9_-]{16,2400})/.exec(decodeURIComponent(location.hash||'')), code=m? m[0] : '', p=null;
+  if(m){ try{ var b=m[1].replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4) b+='='; p=JSON.parse(decodeURIComponent(escape(atob(b)))); }catch(e){ p=null; } }
+  function face(kind){
+    var ink='stroke="#0E2030" stroke-width="1.35" stroke-linecap="round" fill="none"';
+    var dot=function(x){ return '<circle cx="'+x+'" cy="12.3" r="1.3" fill="#0E2030"/>'; }, arch=function(x){ return '<path d="M'+(x-1.3)+' 12.9 Q'+x+' 11.1 '+(x+1.3)+' 12.9" '+ink+'/>'; }, shut=function(x){ return '<path d="M'+(x-1.3)+' 11.9 Q'+x+' 13.5 '+(x+1.3)+' 11.9" '+ink+'/>'; };
+    var eyes=kind==='smile'? dot(10.4)+dot(15.6) : kind==='wink'? dot(10.4)+arch(15.6) : kind==='sleepy'? shut(10.4)+shut(15.6) : arch(10.4)+arch(15.6);
+    var mouth=kind==='sleepy'? '<path d="M12.2 15.8 Q13 16.5 13.8 15.8" '+ink+'/>' : kind==='happy'? '<path d="M10.7 14.7 Q13 18.7 15.3 14.7 Z" fill="#0E2030"/>' : '<path d="M10.4 15.1 Q13 17.6 15.6 15.1" '+ink+'/>';
+    return '<svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="7.9" cy="15.2" r="1.7" fill="#FF9E8C" opacity=".45"/><circle cx="18.1" cy="15.2" r="1.7" fill="#FF9E8C" opacity=".45"/>'+eyes+mouth+'</svg>';
+  }
+  function when(pl){
+    if(!pl || !pl.level || pl.level==='year') return T.later;
+    var d=(pl.month? pl.month+(EN? '/' : '월 ') : '')+(pl.day? pl.day+(EN? '' : '일') : '');
+    if(pl.level==='hour' && pl.hour!=null) d+=' '+(pl.hour<10? '0'+pl.hour : pl.hour)+':'+(pl.minute? (pl.minute<10? '0'+pl.minute : pl.minute) : '00');
+    else if(pl.level==='part' && pl.part!=null) d+=' '+(T.parts[pl.part]||'');
+    return d||T.later;
+  }
+  if(p && p.v===1 && p.text){
+    $('from').textContent=T.from.replace('{from}', p.from||'');
+    $('what').textContent=p.text; $('when').textContent=when(p.place); $('mood').textContent=T.mood[(p.mood||6)-1]||'';
+    if(p.note){ $('note').textContent='“'+p.note+'”'; $('note').hidden=false; }
+    $('card').hidden=false; $('bub').innerHTML=face(p.face||'smile');
+    document.title=(p.from? p.from+(EN? ' · ' : ' 님의 ') : '')+p.text;
+  }else{ $('bad').hidden=false; $('open').hidden=true; $('copy').hidden=true; $('bub').innerHTML=face('sleepy'); }
+  $('open').addEventListener('click', function(){
+    var t0=Date.now(); location.href='bubbly://receive#'+code;                       // 앱이 있으면 바로 받는다(main.js appUrlOpen)
+    setTimeout(function(){ if(Date.now()-t0<2600 && !document.hidden){ var s=/iPhone|iPad/.test(navigator.userAgent)? STORE_IOS : STORE_ANDROID; if(s) location.href=s; else $('copy').click(); } }, 1500);
+  });
+  $('copy').addEventListener('click', function(){
+    var text=code; var done=function(){ $('hint').textContent=T.copied; };
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function(){ prompt('', text); });
+    else prompt('', text);
+  });
+})();
+</script>
+</body>
+</html>
