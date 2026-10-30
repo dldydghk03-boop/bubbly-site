@@ -70,17 +70,18 @@
   // 말: 받는 사람 폰의 말(ko · ja · 그 밖은 영어). 2026-10-30 일본어 — 전에는 일본어 폰에 영어가 떴다
   var LG=/^ko/i.test(navigator.language||'')? 'ko' : /^ja/i.test(navigator.language||'')? 'ja' : 'en', EN=LG!=='ko', JA=LG==='ja';
   var T=JA? {title:'しずくが届きました', from:'{from}さんから', fromAnon:'友達から', open:'しずくプランナーで受け取る', copy:'文章をコピー', copied:'コピーしました · アプリの「受け取る」に貼り付けてください', bad:'しずくが見つかりませんでした。届いた文章を最初から最後までコピーして、アプリの「受け取る」に貼り付けてください。',
-      hint:'アプリがあればすぐに開きます。なければしずくをコピーしておきます。インストール後に「受け取る」に貼り付けてください。', copiedAuto:'しずくをコピーしました · インストール後に「受け取る」に貼り付けてください', landTitle:'しずくプランナー', landSub:'やることがしずくになって浮かぶプランナー', later:'あとで', ios:'App Storeで入手', android:'Google Playで入手', mood:['📌 必ず','💪 応援','🎂 お祝い','🍰 一緒に','😴 休んで','🫧 なんとなく'], parts:['朝','午前','午後','夕方','夜']}
+      hint:'アプリがあればすぐに開きます。なければしずくをコピーしておきます。インストール後に「受け取る」に貼り付けてください。', copiedAuto:'しずくをコピーしました · インストール後に「受け取る」に貼り付けてください', landTitle:'しずくプランナー', landSub:'やることがしずくになって浮かぶプランナー', later:'あとで', ios:'App Storeで入手', android:'Google Playで入手', replyTitle:'返事が届きました', replyWhat:'{from}さんがしずくを完了しました ✨', replyWhatAnon:'友達がしずくを完了しました ✨', mood:['📌 必ず','💪 応援','🎂 お祝い','🍰 一緒に','😴 休んで','🫧 なんとなく'], parts:['朝','午前','午後','夕方','夜']}
     : EN? {title:'A bubble arrived', from:'from {from}', fromAnon:'from a friend', open:'Open in Bubbly', copy:'Copy the text', copied:'Copied · paste it into Receive in Bubbly', bad:'Couldn’t find a bubble here. Copy the whole message and paste it into Receive in the app.',
-      hint:'Opens right away if you have the app. If not, the bubble is copied for you — install, then paste it into Receive.', copiedAuto:'The bubble is copied · after installing, paste it into Receive', landTitle:'Bubbly', landSub:'A planner where your to-dos float up as bubbles', later:'Later', ios:'Get it on the App Store', android:'Get it on Google Play', mood:['📌 Must','💪 Go!','🎂 Congrats','🍰 Together','😴 Rest','🫧 Just'], parts:['morning','midmorning','afternoon','evening','night']}
+      hint:'Opens right away if you have the app. If not, the bubble is copied for you — install, then paste it into Receive.', copiedAuto:'The bubble is copied · after installing, paste it into Receive', landTitle:'Bubbly', landSub:'A planner where your to-dos float up as bubbles', later:'Later', ios:'Get it on the App Store', android:'Get it on Google Play', replyTitle:'A reply arrived', replyWhat:'{from} finished your bubble ✨', replyWhatAnon:'Your friend finished your bubble ✨', mood:['📌 Must','💪 Go!','🎂 Congrats','🍰 Together','😴 Rest','🫧 Just'], parts:['morning','midmorning','afternoon','evening','night']}
     : {title:'방울이 도착했어요', from:'{from} 님이 보냈어요', fromAnon:'친구가 보냈어요', open:'방울 플래너로 받기', copy:'글 복사하기', copied:'복사했어요 · 앱의 ‘받기’에 붙여 넣어요', bad:'방울 글을 찾지 못했어요. 받은 글을 처음부터 끝까지 복사해서 앱의 ‘받기’에 붙여 넣어 주세요.',
-      hint:'앱이 있으면 바로 열려요. 없으면 방울 글을 복사해 둘게요. 설치한 뒤 ‘받기’에 붙여 넣어요.', copiedAuto:'방울 글을 복사해 뒀어요 · 설치한 뒤 ‘받기’에 붙여 넣어요', landTitle:'방울 플래너', landSub:'할 일이 방울이 되어 떠오르는 플래너', later:'나중에', ios:'App Store에서 받기', android:'Google Play에서 받기', mood:['📌 꼭','💪 응원','🎂 축하','🍰 같이','😴 쉬어','🫧 그냥'], parts:['아침','오전','오후','저녁','밤']};
+      hint:'앱이 있으면 바로 열려요. 없으면 방울 글을 복사해 둘게요. 설치한 뒤 ‘받기’에 붙여 넣어요.', copiedAuto:'방울 글을 복사해 뒀어요 · 설치한 뒤 ‘받기’에 붙여 넣어요', landTitle:'방울 플래너', landSub:'할 일이 방울이 되어 떠오르는 플래너', later:'나중에', ios:'App Store에서 받기', android:'Google Play에서 받기', replyTitle:'답이 왔어요', replyWhat:'{from} 님이 방울을 끝냈어요 ✨', replyWhatAnon:'친구가 방울을 끝냈어요 ✨', mood:['📌 꼭','💪 응원','🎂 축하','🍰 같이','😴 쉬어','🫧 그냥'], parts:['아침','오전','오후','저녁','밤']};
   var $=function(id){ return document.getElementById(id); };
   if(JA){ $('pv').textContent='プライバシーポリシー'; $('pv').href='privacy-ja.html'; } else if(EN){ $('pv').textContent='Privacy Policy'; $('pv').href='privacy-en.html'; } document.documentElement.lang=LG;
   $('title').textContent=T.title; $('open').textContent=T.open; $('copy').textContent=T.copy; $('hint').textContent=T.hint; $('bad').textContent=T.bad; $('ios').textContent=T.ios; $('android').textContent=T.android;
   if(STORE_IOS){ $('ios').href=STORE_IOS; $('ios').hidden=false; } if(STORE_ANDROID){ $('android').href=STORE_ANDROID; $('android').hidden=false; }
-  var m=/BGL1\.([A-Za-z0-9_-]{16,2400})(?:\.([A-Za-z0-9_-]{64,2400}))?/.exec(decodeURIComponent(location.hash||'')), code=m? m[0] : '', p=null;   // 끝의 '.…'은 보낸 사람의 얼굴 사진(2026-10-19)
-  if(m){ try{ var b=m[1].replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4) b+='='; p=JSON.parse(decodeURIComponent(escape(atob(b)))); }catch(e){ p=null; } }
+  var hs=''; try{ hs=decodeURIComponent(location.hash||''); }catch(e){ hs=location.hash||''; }
+  var m=/BGL1(R?)\.([A-Za-z0-9_-]{16,2400})(?:\.([A-Za-z0-9_-]{64,2400}))?/.exec(hs), code=m? m[0] : '', p=null, reply=!!(m && m[1]);   // 끝의 '.…'은 보낸 사람의 얼굴 사진(2026-10-19) · BGL1R.은 '끝냈어요' 답(2026-10-31)
+  if(m){ try{ var b=m[2].replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4) b+='='; p=JSON.parse(decodeURIComponent(escape(atob(b)))); }catch(e){ p=null; } }
   function face(kind){
     var ink='stroke="#0E2030" stroke-width="1.35" stroke-linecap="round" fill="none"';
     var dot=function(x){ return '<circle cx="'+x+'" cy="12.3" r="1.3" fill="#0E2030"/>'; }, arch=function(x){ return '<path d="M'+(x-1.3)+' 12.9 Q'+x+' 11.1 '+(x+1.3)+' 12.9" '+ink+'/>'; }, shut=function(x){ return '<path d="M'+(x-1.3)+' 11.9 Q'+x+' 13.5 '+(x+1.3)+' 11.9" '+ink+'/>'; };
@@ -127,13 +128,19 @@
     else if(pl.level==='part' && pl.part!=null) d+=' '+(T.parts[pl.part]||'');
     return d||T.later;
   }
-  if(p && p.v===1 && p.text){
+  if(reply && p && p.v===1 && p.kind==='done'){   // '끝냈어요' 답(2026-10-31 결함 조사 — 전에는 링크가 없어 받는 사람이 코드를 직접 붙여 넣어야 했다): 앱이 있으면 바로 받는다
+    var anonR=!p.from || p.from==='친구' || p.from==='A friend' || p.from==='友達';
+    $('title').textContent=T.replyTitle; $('from').textContent='';
+    $('what').textContent=anonR? T.replyWhatAnon : T.replyWhat.replace('{from}', p.from); $('when').textContent=''; $('mood').textContent='';
+    $('card').hidden=false; $('bub').innerHTML=face('happy');
+    document.title=T.replyTitle;
+  }else if(p && p.v===1 && p.text){
     var anon=!p.from || p.from==='친구' || p.from==='A friend' || p.from==='友達';   // 이름 없이 보낸 방울(2026-10-19 — "친구 님이"는 어색했다)
     $('from').textContent=anon? T.fromAnon : T.from.replace('{from}', p.from);
     $('what').textContent=p.text; $('when').textContent=when(p.place); $('mood').textContent=T.mood[(p.mood||6)-1]||'';
     if(p.note){ $('note').textContent='“'+p.note+'”'; $('note').hidden=false; }
     $('card').hidden=false; $('bub').innerHTML=face(p.face||'smile');
-    if(m[2]) photo(m[2], function(cv){ $('bub').innerHTML=''; $('bub').appendChild(cv); });   // 보낸 사람의 얼굴이 방울 속에(못 풀면 그림 얼굴 그대로)
+    if(m[3]) photo(m[3], function(cv){ $('bub').innerHTML=''; $('bub').appendChild(cv); });   // 보낸 사람의 얼굴이 방울 속에(못 풀면 그림 얼굴 그대로)
     document.title=(p.from? p.from+(JA? 'さんの ' : EN? ' · ' : ' 님의 ') : '')+p.text;
   }else if(!/BGL1/.test(location.hash||'')){   // 코드 없이 열었다(바다 그림과 같이 간 링크 — 2026-10-19): 앱 소개와 스토어
     $('title').textContent=T.landTitle; $('from').textContent=T.landSub; $('open').hidden=true; $('copy').hidden=true; $('hint').hidden=true; $('bub').innerHTML=face('smile');
