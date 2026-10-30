@@ -1,0 +1,156 @@
+<!-- 만든 파일 — site/b.html을 고치고 node tools/make-receive-pages.js -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bubbly · A bubble for you</title>
+<meta name="description" content="See the bubble a friend sent and get it in Bubbly">
+<meta property="og:title" content="🫧 A bubble arrived">
+<meta property="og:description" content="Open it in Bubbly and add it to your plans">
+<meta property="og:image" content="https://dldydghk03-boop.github.io/bubbly-site/og-bubble-en.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#071722">
+<!-- 받기 페이지(2026-10-18 WORLD H — 바이럴 고리): 보내기 글의 링크 #BGL1.… 을 열면 방울을 보여 주고, 앱이 있으면 bubbly:// 로 바로 받고, 없으면 설치로.
+     서버 없음 — 코드는 주소의 # 뒤라 서버로 가지 않는다(GitHub Pages 정적 파일). 스토어 주소가 생기면 아래 STORE 두 줄만 채운다. -->
+<style>
+  :root{--text:rgba(248,247,242,.94); --dim:rgba(225,236,244,.62); --accent:#53D7C2; --ink:#03241E; --fill:rgba(255,255,255,.08);}
+  *{box-sizing:border-box}
+  html,body{margin:0; min-height:100%; background:linear-gradient(180deg,#0B2A3C 0%,#071722 55%,#040E18 100%); color:var(--text);
+    font-family:ui-rounded,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard Variable",system-ui,"Noto Sans KR",sans-serif;}
+  main{max-width:420px; margin:0 auto; padding:max(28px,env(safe-area-inset-top)) 20px 40px; text-align:center;}
+  .bub{width:150px; height:150px; margin:26px auto 18px; border-radius:50%; position:relative;
+    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.28), rgba(120,170,200,.14) 60%, rgba(60,120,160,.08));
+    box-shadow:inset 0 0 0 2px rgba(200,230,245,.5), 0 0 40px rgba(120,200,230,.25); animation:bob 4s ease-in-out infinite;}
+  .bub::before{content:''; position:absolute; left:28px; top:22px; width:30px; height:16px; border-radius:50%; background:rgba(255,255,255,.85); transform:rotate(-30deg);}
+  .bub svg{position:absolute; left:0; top:0; width:100%; height:100%;}
+  .bub canvas{position:absolute; left:4%; top:4%; width:92%; height:92%; z-index:1;} .bub::before{z-index:2;} .bub::after{content:''; position:absolute; inset:0; border-radius:50%; z-index:2; background:radial-gradient(circle, rgba(255,255,255,0) 60%, rgba(255,255,255,.14) 100%);}   /* 유리 막(반짝임 · 가장자리 빛은 얼굴 위에) */   /* 친구의 얼굴 사진(2026-10-19 — 앱 myface.js와 같은 판) */
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @media (prefers-reduced-motion:reduce){.bub{animation:none}}
+  h1{font-size:22px; margin:0 0 6px; letter-spacing:-.01em;}
+  .from{color:var(--dim); font-size:15px; margin:0 0 22px;}
+  .card{background:var(--fill); border-radius:22px; padding:18px 18px 16px; text-align:left; box-shadow:inset 0 1px 0 rgba(255,255,255,.12);}
+  .what{font-size:19px; font-weight:800; margin:0 0 6px; word-break:keep-all;}
+  .when{color:var(--dim); font-size:14px; margin:0 0 8px;}
+  .mood{font-size:14px; margin:0;}
+  .note{color:var(--dim); font-size:14px; margin:6px 0 0; white-space:pre-line;}
+  button,a.btn{display:block; width:100%; border:0; border-radius:18px; padding:16px; margin-top:12px; font:inherit; font-size:16px; font-weight:800; cursor:pointer; text-decoration:none; text-align:center;}
+  .go{background:var(--accent); color:var(--ink); box-shadow:0 10px 26px -10px rgba(83,215,194,.7);}
+  .sub{background:var(--fill); color:var(--text);}
+  .hint{color:var(--dim); font-size:13px; line-height:1.5; margin:18px 0 0;}
+  .bad{color:#FF9E8C;}
+  footer{margin-top:36px; color:var(--dim); font-size:12px;} footer a{color:var(--dim);}
+  [hidden]{display:none !important;}
+</style>
+</head>
+<body>
+<main>
+  <div class="bub" id="bub"></div>
+  <h1 id="title">방울이 도착했어요</h1>
+  <p class="from" id="from"></p>
+  <div class="card" id="card" hidden>
+    <p class="what" id="what"></p>
+    <p class="when" id="when"></p>
+    <p class="mood" id="mood"></p>
+    <p class="note" id="note" hidden></p>
+  </div>
+  <p class="hint bad" id="bad" hidden>방울 글을 찾지 못했어요. 받은 글을 처음부터 끝까지 복사해서 앱의 ‘받기’에 붙여 넣어 주세요.</p>
+  <button type="button" class="go" id="open">방울 플래너로 받기</button>
+  <button type="button" class="sub" id="copy">글 복사하기</button>
+  <a class="btn sub" id="ios" hidden>App Store에서 받기</a>
+  <a class="btn sub" id="android" hidden>Google Play에서 받기</a>
+  <p class="hint" id="hint">앱이 있으면 바로 열려요. 없으면 글을 복사해 두고 설치한 뒤 ‘받기’에 붙여 넣어요.</p>
+  <footer><a href="privacy.html" id="pv">개인정보처리방침</a></footer>
+</main>
+<script>
+(function(){
+  'use strict';
+  var STORE_IOS='', STORE_ANDROID='';   // 스토어 주소가 생기면 여기만(docs/STORE.md)
+  // 말: 받는 사람 폰의 말(ko · ja · 그 밖은 영어). 2026-10-30 일본어 — 전에는 일본어 폰에 영어가 떴다
+  var LG=/^ko/i.test(navigator.language||'')? 'ko' : /^ja/i.test(navigator.language||'')? 'ja' : 'en', EN=LG!=='ko', JA=LG==='ja';
+  var T=JA? {title:'しずくが届きました', from:'{from}さんから', fromAnon:'友達から', open:'しずくプランナーで受け取る', copy:'文章をコピー', copied:'コピーしました · アプリの「受け取る」に貼り付けてください', bad:'しずくが見つかりませんでした。届いた文章を最初から最後までコピーして、アプリの「受け取る」に貼り付けてください。',
+      hint:'アプリがあればすぐに開きます。なければしずくをコピーしておきます。インストール後に「受け取る」に貼り付けてください。', copiedAuto:'しずくをコピーしました · インストール後に「受け取る」に貼り付けてください', landTitle:'しずくプランナー', landSub:'やることがしずくになって浮かぶプランナー', later:'あとで', ios:'App Storeで入手', android:'Google Playで入手', mood:['📌 必ず','💪 応援','🎂 お祝い','🍰 一緒に','😴 休んで','🫧 なんとなく'], parts:['朝','午前','午後','夕方','夜']}
+    : EN? {title:'A bubble arrived', from:'from {from}', fromAnon:'from a friend', open:'Open in Bubbly', copy:'Copy the text', copied:'Copied · paste it into Receive in Bubbly', bad:'Couldn’t find a bubble here. Copy the whole message and paste it into Receive in the app.',
+      hint:'Opens right away if you have the app. If not, the bubble is copied for you — install, then paste it into Receive.', copiedAuto:'The bubble is copied · after installing, paste it into Receive', landTitle:'Bubbly', landSub:'A planner where your to-dos float up as bubbles', later:'Later', ios:'Get it on the App Store', android:'Get it on Google Play', mood:['📌 Must','💪 Go!','🎂 Congrats','🍰 Together','😴 Rest','🫧 Just'], parts:['morning','midmorning','afternoon','evening','night']}
+    : {title:'방울이 도착했어요', from:'{from} 님이 보냈어요', fromAnon:'친구가 보냈어요', open:'방울 플래너로 받기', copy:'글 복사하기', copied:'복사했어요 · 앱의 ‘받기’에 붙여 넣어요', bad:'방울 글을 찾지 못했어요. 받은 글을 처음부터 끝까지 복사해서 앱의 ‘받기’에 붙여 넣어 주세요.',
+      hint:'앱이 있으면 바로 열려요. 없으면 방울 글을 복사해 둘게요. 설치한 뒤 ‘받기’에 붙여 넣어요.', copiedAuto:'방울 글을 복사해 뒀어요 · 설치한 뒤 ‘받기’에 붙여 넣어요', landTitle:'방울 플래너', landSub:'할 일이 방울이 되어 떠오르는 플래너', later:'나중에', ios:'App Store에서 받기', android:'Google Play에서 받기', mood:['📌 꼭','💪 응원','🎂 축하','🍰 같이','😴 쉬어','🫧 그냥'], parts:['아침','오전','오후','저녁','밤']};
+  var $=function(id){ return document.getElementById(id); };
+  if(JA){ $('pv').textContent='プライバシーポリシー'; $('pv').href='privacy-ja.html'; } else if(EN){ $('pv').textContent='Privacy Policy'; $('pv').href='privacy-en.html'; } document.documentElement.lang=LG;
+  $('title').textContent=T.title; $('open').textContent=T.open; $('copy').textContent=T.copy; $('hint').textContent=T.hint; $('bad').textContent=T.bad; $('ios').textContent=T.ios; $('android').textContent=T.android;
+  if(STORE_IOS){ $('ios').href=STORE_IOS; $('ios').hidden=false; } if(STORE_ANDROID){ $('android').href=STORE_ANDROID; $('android').hidden=false; }
+  var m=/BGL1\.([A-Za-z0-9_-]{16,2400})(?:\.([A-Za-z0-9_-]{64,2400}))?/.exec(decodeURIComponent(location.hash||'')), code=m? m[0] : '', p=null;   // 끝의 '.…'은 보낸 사람의 얼굴 사진(2026-10-19)
+  if(m){ try{ var b=m[1].replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4) b+='='; p=JSON.parse(decodeURIComponent(escape(atob(b)))); }catch(e){ p=null; } }
+  function face(kind){
+    var ink='stroke="#0E2030" stroke-width="1.35" stroke-linecap="round" fill="none"';
+    var dot=function(x){ return '<circle cx="'+x+'" cy="12.3" r="1.3" fill="#0E2030"/>'; }, arch=function(x){ return '<path d="M'+(x-1.3)+' 12.9 Q'+x+' 11.1 '+(x+1.3)+' 12.9" '+ink+'/>'; }, shut=function(x){ return '<path d="M'+(x-1.3)+' 11.9 Q'+x+' 13.5 '+(x+1.3)+' 11.9" '+ink+'/>'; };
+    var eyes=kind==='smile'? dot(10.4)+dot(15.6) : kind==='wink'? dot(10.4)+arch(15.6) : kind==='sleepy'? shut(10.4)+shut(15.6) : arch(10.4)+arch(15.6);
+    var mouth=kind==='sleepy'? '<path d="M12.2 15.8 Q13 16.5 13.8 15.8" '+ink+'/>' : kind==='happy'? '<path d="M10.7 14.7 Q13 18.7 15.3 14.7 Z" fill="#0E2030"/>' : '<path d="M10.4 15.1 Q13 17.6 15.6 15.1" '+ink+'/>';
+    return '<svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="7.9" cy="15.2" r="1.7" fill="#FF9E8C" opacity=".45"/><circle cx="18.1" cy="15.2" r="1.7" fill="#FF9E8C" opacity=".45"/>'+eyes+mouth+'</svg>';
+  }
+  function sm(e0, e1, x){ var u=Math.max(0, Math.min(1, (x-e0)/(e1-e0))); return u*u*(3-2*u); }
+  // 보낸 사람의 눈 · 코 · 입(2026-10-19): 앱 myface.js와 같은 판(6 — 표를 뺀 작은 컬러 JPEG 128×96 4:2:0, 두 눈 · 코 · 입 자리 + 살빛)과 같은 그림(photoCanvas — 살빛을 뒷배경으로 옮긴다)
+  var JQ=[16,11,10,16,24,40,51,61,12,12,14,19,26,58,60,55,14,13,16,24,40,57,69,56,14,17,22,29,51,87,80,62,18,22,37,56,68,109,103,77,24,35,55,64,81,104,113,92,49,64,78,87,103,121,120,101,72,92,95,98,112,100,103,99];
+  var CQ=[17,18,24,47,99,99,99,99,18,21,26,66,99,99,99,99,24,26,56,99,99,99,99,99,47,66,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99];
+  var ZZ=[0,1,8,16,9,2,3,10,17,24,32,25,18,11,4,5,12,19,26,33,40,48,41,34,27,20,13,6,7,14,21,28,35,42,49,56,57,50,43,36,29,22,15,23,30,37,44,51,58,59,52,45,38,31,39,46,53,60,61,54,47,55,62,63];
+  var DCB=[0,1,5,1,1,1,1,1,1,0,0,0,0,0,0,0], DCV=[0,1,2,3,4,5,6,7,8,9,10,11], ACB=[0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,125];
+  var ACV=[1,2,3,0,4,17,5,18,33,49,65,6,19,81,97,7,34,113,20,50,129,145,161,8,35,66,177,193,21,82,209,240,36,51,98,114,130,9,10,22,23,24,25,26,37,38,39,40,41,42,52,53,54,55,56,57,58,67,68,69,70,71,72,73,74,83,84,85,86,87,88,89,90,99,100,101,102,103,104,105,106,115,116,117,118,119,120,121,122,131,132,133,134,135,136,137,138,146,147,148,149,150,151,152,153,154,162,163,164,165,166,167,168,169,170,178,179,180,181,182,183,184,185,186,194,195,196,197,198,199,200,201,202,210,211,212,213,214,215,216,217,218,225,226,227,228,229,230,231,232,233,234,241,242,243,244,245,246,247,248,249,250];
+  var FEATURES=[[-0.38, -0.24, 0.23, 0.21], [0.38, -0.24, 0.23, 0.21], [0, 0.12, 0.16, 0.21], [0, 0.52, 0.34, 0.16]], SCALE=[1.15, 1.15, 1.1, 1.15], AW=128, AH=96, AK=100;
+  var PATCHES=[[-0.62, -0.48, 0, 0, 48, 48], [0.14, -0.48, 48, 0, 48, 48], [-0.16, -0.12, 96, 0, 32, 48], [-0.48, 0.28, 0, 48, 96, 48]];
+  function fdraw(ou, ov){ var w=0, k=-1, su=0, sv=0, i; for(i=0;i<4;i++){ var F=FEATURES[i], u=F[0]+(ou-F[0])/SCALE[i], v=F[1]+(ov-F[1])/SCALE[i], e=Math.sqrt(Math.pow((u-F[0])/F[2], 2)+Math.pow((v-F[1])/F[3], 2)); if(e<1){ var wi=1-sm(0.62, 1, e); if(wi>w){ w=wi; k=i; su=u; sv=v; } } } return [w, k, su, sv]; }
+  function qt(base, q){ var sc=q<50? 5000/q : 200-2*q; return base.map(function(v){ return Math.max(1, Math.min(255, Math.floor((v*sc+50)/100))); }); }
+  function photo(ph, done){
+    var b=ph.replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4) b+='='; var bin; try{ bin=atob(b); }catch(e){ return; }
+    if(bin.charCodeAt(0)!==6) return; var q=bin.charCodeAt(1), ref=[bin.charCodeAt(2), bin.charCodeAt(3), bin.charCodeAt(4)], i; if(q<20 || q>95 || bin.length<40) return;
+    var QY=qt(JQ, q), QC=qt(CQ, q), h=[0xFF,0xD8,0xFF,0xDB,0,132,0]; for(i=0;i<64;i++) h.push(QY[ZZ[i]]); h.push(1); for(i=0;i<64;i++) h.push(QC[ZZ[i]]);
+    h=h.concat([0xFF,0xC0,0,17,8,AH>>8,AH&255,AW>>8,AW&255,3, 1,0x22,0, 2,0x11,1, 3,0x11,1, 0xFF,0xC4,0,19+DCV.length,0x00], DCB, DCV, [0xFF,0xC4,0,19+ACV.length,0x10], ACB, ACV, [0xFF,0xDA,0,12,3, 1,0, 2,0, 3,0, 0,63,0]);
+    var str=''; for(i=0;i<h.length;i++) str+=String.fromCharCode(h[i]); str+=bin.slice(5)+String.fromCharCode(0xFF, 0xD9);
+    var img=new Image();
+    img.onload=function(){
+      var t=document.createElement('canvas'); t.width=AW; t.height=AH; var tg=t.getContext('2d'); if(!tg) return; tg.drawImage(img, 0, 0);
+      var D=tg.getImageData(0, 0, AW, AH).data, bk=[30, 60, 80], TY=0.299*bk[0]+0.587*bk[1]+0.114*bk[2], TCb=128-0.168736*bk[0]-0.331264*bk[1]+0.5*bk[2], TCr=128+0.5*bk[0]-0.418688*bk[1]-0.081312*bk[2];   // 뒷배경: 이 페이지 방울의 가운데 빛깔
+      var O=256, hf=O/2, cv=document.createElement('canvas'); cv.width=cv.height=O; var g=cv.getContext('2d'); if(!g) return; var im=g.createImageData(O, O), d=im.data, x, y;
+      var cl=function(v){ return Math.max(0, Math.min(255, Math.round(v))); };
+      for(y=0;y<O;y++) for(x=0;x<O;x++){ var f=fdraw((x+0.5-hf)/hf, (y+0.5-hf)/hf), w=f[0], k=f[1]; if(w<=0) continue; var P=PATCHES[k], u=f[2], v=f[3];
+        var ax=Math.max(P[2], Math.min(P[2]+P[4]-1.001, P[2]+(u-P[0])*AK-0.5)), ay=Math.max(P[3], Math.min(P[3]+P[5]-1.001, P[3]+(v-P[1])*AK-0.5)), x0=Math.floor(ax), y0=Math.floor(ay), fx=ax-x0, fy=ay-y0, j=(y0*AW+x0)*4, qq=(y*O+x)*4;
+        var at=function(c){ return (D[j+c]*(1-fx)+D[j+4+c]*fx)*(1-fy)+(D[j+AW*4+c]*(1-fx)+D[j+AW*4+4+c]*fx)*fy; }, r=at(0), gg=at(1), bb=at(2);
+        var dY=0.299*r+0.587*gg+0.114*bb-ref[0], Y=TY+(k===2 && dY>0? dY*0.4 : dY), cs=k===2? 0.25 : 0.8, Cb=TCb+cs*((128-0.168736*r-0.331264*gg+0.5*bb)-ref[1]), Cr=TCr+cs*((128+0.5*r-0.418688*gg-0.081312*bb)-ref[2]);   // 앱 photoCanvas와 같다
+        d[qq]=cl(Y+1.402*(Cr-128)); d[qq+1]=cl(Y-0.344136*(Cb-128)-0.714136*(Cr-128)); d[qq+2]=cl(Y+1.772*(Cb-128)); d[qq+3]=Math.round(255*0.95*w); }
+      g.putImageData(im, 0, 0); done(cv);
+    };
+    img.src='data:image/jpeg;base64,'+btoa(str);
+  }
+  function when(pl){
+    if(!pl || !pl.level || pl.level==='year') return T.later;
+    var d=(pl.month? pl.month+(JA? '月' : EN? '/' : '월 ') : '')+(pl.day? pl.day+(JA? '日' : EN? '' : '일') : '');
+    if(pl.level==='hour' && pl.hour!=null) d+=' '+(pl.hour<10? '0'+pl.hour : pl.hour)+':'+(pl.minute? (pl.minute<10? '0'+pl.minute : pl.minute) : '00');
+    else if(pl.level==='part' && pl.part!=null) d+=' '+(T.parts[pl.part]||'');
+    return d||T.later;
+  }
+  if(p && p.v===1 && p.text){
+    var anon=!p.from || p.from==='친구' || p.from==='A friend' || p.from==='友達';   // 이름 없이 보낸 방울(2026-10-19 — "친구 님이"는 어색했다)
+    $('from').textContent=anon? T.fromAnon : T.from.replace('{from}', p.from);
+    $('what').textContent=p.text; $('when').textContent=when(p.place); $('mood').textContent=T.mood[(p.mood||6)-1]||'';
+    if(p.note){ $('note').textContent='“'+p.note+'”'; $('note').hidden=false; }
+    $('card').hidden=false; $('bub').innerHTML=face(p.face||'smile');
+    if(m[2]) photo(m[2], function(cv){ $('bub').innerHTML=''; $('bub').appendChild(cv); });   // 보낸 사람의 얼굴이 방울 속에(못 풀면 그림 얼굴 그대로)
+    document.title=(p.from? p.from+(JA? 'さんの ' : EN? ' · ' : ' 님의 ') : '')+p.text;
+  }else if(!/BGL1/.test(location.hash||'')){   // 코드 없이 열었다(바다 그림과 같이 간 링크 — 2026-10-19): 앱 소개와 스토어
+    $('title').textContent=T.landTitle; $('from').textContent=T.landSub; $('open').hidden=true; $('copy').hidden=true; $('hint').hidden=true; $('bub').innerHTML=face('smile');
+    document.title=T.landTitle;
+  }else{ $('bad').hidden=false; $('open').hidden=true; $('copy').hidden=true; $('bub').innerHTML=face('sleepy'); }
+  $('open').addEventListener('click', function(){
+    try{ if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(function(){ $('hint').textContent=T.copiedAuto; }, function(){}); }catch(e){}   // 누르는 순간 복사(2026-10-19 — 스토어로 갔다 오면 방울을 잃었다)
+    var t0=Date.now(); location.href='bubbly://receive#'+code;                       // 앱이 있으면 바로 받는다(main.js appUrlOpen)
+    setTimeout(function(){ if(Date.now()-t0<2600 && !document.hidden){ var s=/iPhone|iPad/.test(navigator.userAgent)? STORE_IOS : STORE_ANDROID; if(s) location.href=s; else $('copy').click(); } }, 1500);
+  });
+  $('copy').addEventListener('click', function(){
+    var text=code; var done=function(){ $('hint').textContent=T.copied; };
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function(){ prompt('', text); });
+    else prompt('', text);
+  });
+})();
+</script>
+</body>
+</html>
